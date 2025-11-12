@@ -23,7 +23,14 @@ def generate_math(max_value=100):
 
     return f"{a} {op} {b} = {result}"
 
+def generate_dataset(num_samples=1000, max_value=100):
+    dataset = []
+    for _ in range(num_samples):
+        dataset.append(generate_math(max_value))
+    return dataset
+
 
 if __name__ == "__main__":
-    for _ in range(10):
-        print(generate_math(50))
+    samples = generate_dataset(10, 50)
+    for sample in samples:
+        print(sample)
