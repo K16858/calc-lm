@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 class Tokenizer:
     def __init__(self):
@@ -29,3 +29,22 @@ class Tokenizer:
         self.sos_id = self.token2id[self.sos_token]
         self.eos_id = self.token2id[self.eos_token]
         self.unk_id = self.token2id[self.unk_token]
+
+    def tokenize(self, text: str) -> List[str]:
+        text = text.replace(" ", "")
+        
+        tokens = []
+        for char in text:
+            if char in self.token2id:
+                tokens.append(char)
+            else:
+                tokens.append(self.unk_token)
+        
+        return tokens
+    
+if __name__ == "__main__":
+    tokenizer = Tokenizer()
+    sample_text = "12 + 34 = 46"
+    tokens = tokenizer.tokenize(sample_text)
+    print("Text:", sample_text)
+    print("Tokens:", tokens)
