@@ -16,7 +16,10 @@ def generate_math(max_value=100):
         if b == 0:
             result = "undefined"
         else:
-            result = a / b
+            if a % b != 0:
+                return f"{a} {op} {b} = {a}/{b}"
+            else:
+                result = a / b
 
     return f"{a} {op} {b} = {result}"
 
