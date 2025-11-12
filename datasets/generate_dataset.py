@@ -19,7 +19,7 @@ def generate_math(max_value=100):
             if a % b != 0:
                 return f"{a} {op} {b} = {a}/{b}"
             else:
-                result = a / b
+                result = a // b
 
     return f"{a} {op} {b} = {result}"
 
