@@ -1,2 +1,3 @@
 /docs/note.md
 /datasets/*.txt
+/__pycache__/
