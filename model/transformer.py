@@ -111,3 +111,32 @@ class Transformer(nn.Module):
         logits = self.fc_out(output)
         
         return logits
+    
+    def generate(
+        self,
+        input_ids: torch.Tensor,
+        max_length: int = 50,
+        temperature: float = 1.0,
+        eos_token_id: int = 2
+    ) -> torch.Tensor:
+        self.eval()
+        
+        with torch.no_grad():
+            for _ in range(max_length):
+                # 現在の系列から次のトークンを予測
+                logits = self.forward(input_ids)
+                
+                # 最後のトークンのロジットを取得
+                next_token_logits = logits[:, -1, :] / temperature
+                
+                # 最も確率の高いトークンを選択
+                next_token = torch.argmax(next_token_logits, dim=-1, keepdim=True)
+                
+                # 系列に追加
+                input_ids = torch.cat([input_ids, next_token], dim=1)
+                
+                # EOSトークンが出たら終了
+                if (next_token == eos_token_id).all():
+                    break
+        
+        return input_ids
