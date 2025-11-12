@@ -61,6 +61,9 @@ class Tokenizer:
             ]
         
         return "".join(tokens)
+    
+    def get_vocab_size(self) -> int:
+        return len(self.vocab)
 
     def __len__(self):
         return len(self.vocab)
