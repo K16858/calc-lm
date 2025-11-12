@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import math
+from typing import Optional
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model: int, max_len: int = 5000, dropout: float = 0.1):
@@ -75,3 +76,38 @@ class Transformer(nn.Module):
     
     def create_padding_mask(self, x: torch.Tensor) -> torch.Tensor:
         return (x == self.pad_idx)
+    
+    def forward(
+        self,
+        src: torch.Tensor,
+        tgt: Optional[torch.Tensor] = None,
+        src_mask: Optional[torch.Tensor] = None
+    ) -> torch.Tensor:
+        batch_size, seq_len = src.size()
+        
+        # 因果マスクを生成
+        if src_mask is None:
+            src_mask = self.generate_square_subsequent_mask(seq_len).to(src.device)
+        
+        # パディングマスクを生成
+        src_key_padding_mask = self.create_padding_mask(src)
+        
+        # 埋め込み + スケーリング
+        x = self.embedding(src) * math.sqrt(self.d_model)
+        
+        # 位置エンコーディングを追加
+        x = self.pos_encoding(x)
+        
+        # Transformer Decoder
+        output = self.transformer_decoder(
+            tgt=x,
+            memory=x,
+            tgt_mask=src_mask,
+            tgt_key_padding_mask=src_key_padding_mask,
+            memory_key_padding_mask=src_key_padding_mask
+        )
+        
+        # 出力層
+        logits = self.fc_out(output)
+        
+        return logits
