@@ -72,3 +72,6 @@ class Transformer(nn.Module):
     def generate_square_subsequent_mask(self, sz: int) -> torch.Tensor:
         mask = torch.triu(torch.ones(sz, sz), diagonal=1).bool()
         return mask
+    
+    def create_padding_mask(self, x: torch.Tensor) -> torch.Tensor:
+        return (x == self.pad_idx)
