@@ -61,7 +61,10 @@ class Tokenizer:
             ]
         
         return "".join(tokens)
-    
+
+    def __len__(self):
+        return len(self.vocab)
+
 if __name__ == "__main__":
     tokenizer = Tokenizer()
     sample_text = "12 + 34 = 46"
