@@ -140,3 +140,11 @@ class Transformer(nn.Module):
                     break
         
         return input_ids
+    
+def count_parameters(model: nn.Module) -> int:
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+if __name__ == "__main__":
+    vocab_size = 20 
+    model = Transformer(vocab_size=vocab_size)
+    print(f"Parameters: {count_parameters(model)}")
