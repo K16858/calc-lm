@@ -68,3 +68,7 @@ class Transformer(nn.Module):
         self.embedding.weight.data.uniform_(-initrange, initrange)
         self.fc_out.bias.data.zero_()
         self.fc_out.weight.data.uniform_(-initrange, initrange)
+
+    def generate_square_subsequent_mask(self, sz: int) -> torch.Tensor:
+        mask = torch.triu(torch.ones(sz, sz), diagonal=1).bool()
+        return mask
