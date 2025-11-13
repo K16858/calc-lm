@@ -200,6 +200,7 @@ class Trainer:
         best_path = self.checkpoint_dir / "best_model.pt"
         if not best_path.exists() or val_loss < min(self.history["val_loss"] or [float('inf')]):
             torch.save(checkpoint, best_path)
+            torch.save(checkpoint, "checkpoints/best_model.pt")
             print(f"best model: epoch {epoch}, val_loss {val_loss:.4f}")
     
     def train(self):

@@ -52,8 +52,8 @@ def generate_answer(model, tokenizer, question: str, max_length: int = 32, devic
 
 def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    
-    checkpoint_path = Path(__file__).parent / "checkpoints" / "20251113_082404" / "best_model.pt"
+
+    checkpoint_path = Path(__file__).parent / "checkpoints" / "best_model.pt"
     model, tokenizer = load_model(str(checkpoint_path), device)
     
     print("\nInput :")
