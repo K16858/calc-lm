@@ -26,29 +26,47 @@ class MathDataset(Dataset):
         self.tokenizer = tokenizer
         self.max_length = max_length
         
+        self.data = []
         with open(data_path, 'r', encoding='utf-8') as f:
-            self.equations = [line.strip() for line in f if line.strip()]
+            for line in f:
+                self.data.append(json.loads(line.strip()))
         
-        print(f"sample: {len(self.equations)}")
+        print(f"sample: {len(self.data)}")
     
     def __len__(self):
-        return len(self.equations)
-    
+        return len(self.data)
+
     def __getitem__(self, idx):
-        equation = self.equations[idx]
+        item = self.data[idx]
+        problem = item["problem"]
+        answer = item["answer"]
         
-        token_ids = self.tokenizer.encode(equation, add_special_tokens=True)
+        problem_ids = self.tokenizer.encode(problem, add_special_tokens=False)
+        answer_ids = self.tokenizer.encode(answer, add_special_tokens=False)
         
-        if len(token_ids) > self.max_length:
-            token_ids = token_ids[:self.max_length]
-        else:
-            pad_length = self.max_length - len(token_ids)
-            token_ids = token_ids + [self.tokenizer.pad_id] * pad_length
+        full_ids = [self.tokenizer.sos_id] + problem_ids + answer_ids + [self.tokenizer.eos_id]
         
-        input_ids = torch.tensor(token_ids[:-1], dtype=torch.long)
-        target_ids = torch.tensor(token_ids[1:], dtype=torch.long)
+        problem_len = len(problem_ids) + 1
         
-        return input_ids, target_ids
+        if len(full_ids) > self.max_length:
+            full_ids = full_ids[:self.max_length]
+        
+        pad_length = self.max_length - len(full_ids)
+        full_ids = full_ids + [self.tokenizer.pad_id] * pad_length
+        
+        input_ids = full_ids[:-1]
+        target_ids = full_ids[1:]
+
+        mask = [-100] * (problem_len - 1)
+        mask += target_ids[len(mask):]
+        
+        mask = [m if tid != self.tokenizer.pad_id else -100 
+                for m, tid in zip(mask, target_ids)]
+        
+        return (
+            torch.tensor(input_ids, dtype=torch.long),
+            torch.tensor(mask, dtype=torch.long)
+        )
 
 
 def collate_fn(batch):
