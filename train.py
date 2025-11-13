@@ -96,7 +96,7 @@ class Trainer:
         self.num_epochs = num_epochs
         
         # 損失関数
-        self.criterion = nn.CrossEntropyLoss(ignore_index=0)
+        self.criterion = nn.CrossEntropyLoss(ignore_index=-100)
         
         # オプティマイザー
         self.optimizer = AdamW(
@@ -256,7 +256,7 @@ def main():
 
     tokenizer = Tokenizer()
 
-    data_path = Path(__file__).parent / "datasets" / "math_dataset.txt"
+    data_path = Path(__file__).parent / "datasets" / "math_dataset.jsonl"
     
     
     dataset = MathDataset(data_path, tokenizer, max_length=MAX_LENGTH)
