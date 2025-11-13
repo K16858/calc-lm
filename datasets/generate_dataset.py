@@ -1,5 +1,6 @@
 import random
 import os
+import json
 
 def generate_math(max_value=100):
     a = random.randint(1, max_value)
@@ -38,4 +39,4 @@ if __name__ == "__main__":
     file_path = os.path.join(os.path.dirname(__file__), "math_dataset.jsonl")
     with open(file_path, "w") as f:
         for sample in samples:
-            f.write(f"{sample}\n")
+            f.write(json.dumps(sample, ensure_ascii=False) + "\n")
