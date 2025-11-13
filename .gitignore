@@ -1,4 +1,5 @@
 /docs/note.md
 /datasets/*.txt
+/datasets/*.jsonl
 */__pycache__/
 /checkpoints/

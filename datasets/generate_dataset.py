@@ -18,11 +18,14 @@ def generate_math(max_value=100):
             result = "undefined"
         else:
             if a % b != 0:
-                return f"{a} {op} {b} = {a}/{b}"
+                return {"problem": f"{a}{op}{b}=", "answer": f"{a}/{b}"}
             else:
                 result = a // b
 
-    return f"{a} {op} {b} = {result}"
+    problem = f"{a}{op}{b}="
+    answer = str(result)
+    
+    return {"problem": problem, "answer": answer}
 
 def generate_dataset(num_samples=1000, max_value=100):
     dataset = []
@@ -32,5 +35,7 @@ def generate_dataset(num_samples=1000, max_value=100):
 
 if __name__ == "__main__":
     samples = generate_dataset(1000000, 5)
-    file_path = os.path.join(os.path.dirname(__file__), "math_dataset.txt")
-    open(file_path, "w").write("\n".join(samples))
+    file_path = os.path.join(os.path.dirname(__file__), "math_dataset.jsonl")
+    with open(file_path, "w") as f:
+        for sample in samples:
+            f.write(f"{sample}\n")
