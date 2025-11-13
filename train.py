@@ -44,21 +44,23 @@ class MathDataset(Dataset):
         problem_ids = self.tokenizer.encode(problem, add_special_tokens=False)
         answer_ids = self.tokenizer.encode(answer, add_special_tokens=False)
         
-        full_ids = [self.tokenizer.sos_id] + problem_ids + answer_ids + [self.tokenizer.eos_id]
+        input_ids = [self.tokenizer.sos_id] + problem_ids
+        target_ids = problem_ids + answer_ids + [self.tokenizer.eos_id]
         
-        problem_len = len(problem_ids) + 1
+        if len(input_ids) > self.max_length:
+            input_ids = input_ids[:self.max_length]
+        if len(target_ids) > self.max_length:
+            target_ids = target_ids[:self.max_length]
         
-        if len(full_ids) > self.max_length:
-            full_ids = full_ids[:self.max_length]
+        input_pad_len = self.max_length - len(input_ids)
+        target_pad_len = self.max_length - len(target_ids)
         
-        pad_length = self.max_length - len(full_ids)
-        full_ids = full_ids + [self.tokenizer.pad_id] * pad_length
+        input_ids = input_ids + [self.tokenizer.pad_id] * input_pad_len
+        target_ids = target_ids + [self.tokenizer.pad_id] * target_pad_len
         
-        input_ids = full_ids[:-1]
-        target_ids = full_ids[1:]
-
-        mask = [-100] * (problem_len - 1)
-        mask += target_ids[len(mask):]
+        problem_len = len(problem_ids)
+        mask = [-100] * problem_len
+        mask += target_ids[problem_len:]
         
         mask = [m if tid != self.tokenizer.pad_id else -100 
                 for m, tid in zip(mask, target_ids)]
@@ -241,7 +243,7 @@ def main():
     # ハイパーパラメータ
     BATCH_SIZE = 128
     LEARNING_RATE = 3e-4
-    NUM_EPOCHS = 20
+    NUM_EPOCHS = 2
     MAX_LENGTH = 32
     
     # モデルパラメータ
